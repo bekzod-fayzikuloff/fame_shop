@@ -36,6 +36,8 @@ packages = [{include = "shop_sample"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 django = "3.0"
+pillow = "^9.5.0"
+python-dotenv = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
