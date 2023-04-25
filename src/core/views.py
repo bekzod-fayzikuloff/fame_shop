@@ -1,11 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
 from .forms.users import CreateUserForm
 from .models import Category, Product
+from .services import is_authenticated
 
 
 def product_list(request: HttpRequest, category_slug=None) -> HttpResponse:
@@ -40,3 +42,22 @@ class RegisterView(View):
             return redirect("product_list")
         messages.error(request, "Unsuccessful registration. Check provide credential")
         return render(self.request, "users/register.html", context={"form": form})
+
+
+class LoginView(View):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Get login page"""
+        form = AuthenticationForm()
+        return render(self.request, "users/login.html", context={"form": form})
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handling User login"""
+        is_auth, user = is_authenticated(request)
+
+        if is_auth:
+            login(request, user)
+            return redirect("product_list")
+
+        messages.error(request, "Unsuccessful login. Check provide credential")
+        form = AuthenticationForm()
+        return render(self.request, "users/login.html", context={"form": form})
