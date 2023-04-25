@@ -5,13 +5,39 @@
 {% block content %}
 
     <div class="product-detail">
-        <img src="{% if product.image %} {{ product.image.url }} {% else %} {% static 'images/no_image.png' %} {% endif %}" alt="">
+        <img
+            src="{% if product.image %} {{ product.image.url }} {% else %} {% static 'images/no_image.png' %} {% endif %}"
+            alt="">
         <h1>{{ product.title }}</h1>
         <h4>
             <a href="{{ product.category.get_absolute_url }}">{{ product.category }}</a>
         </h4>
         <p class="price">${{ product.price }}</p>
+
+        <div class="col-lg-1">
+            <p id="productId" style="display: none">{{ product.pk }}</p>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button id="decrementItem" type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus"
+                            data-field="">
+                        <span class="glyphicon glyphicon-minus">-</span>
+                    </button>
+                </span>
+                <input type="text" id="quantity" name="quantity" class="form-control input-number" value="10" min="1" max="100">
+                <span class="input-group-btn">
+                    <button id="incrementItem" type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus"
+                            data-field="">
+                        <span class="glyphicon glyphicon-plus">+</span>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <button id="addToCart" type="button" class="btn btn-success">
+            <span class="glyphicon glyphicon-plus">Add to Card</span>
+        </button>
+
+
         {{ product.description|linebreaks }}
     </div>
-
+<script src="{% static 'js/detail.js' %}"></script>
 {% endblock %}

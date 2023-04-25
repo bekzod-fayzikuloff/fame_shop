@@ -8,6 +8,9 @@
         {% if user.is_authenticated %} <h3>{{ user.username }}</h3>{% endif %}
         <h3>Categories</h3>
         <ul>
+            <li class="selected cart__item">
+                <a href="#">Card</a>
+            </li>
             <li {% if not category %}class="selected"{% endif %}>
                 <a href="{% url "product_list" %}">All</a>
             </li>
@@ -23,8 +26,7 @@
         {% for product in products %}
             <div class="item">
                 <a href="{{ product.get_absolute_url }}">
-                    <img src="
-                            {% if product.image %}{{ product.image.url }}{% else %}{% static "images/no_image.png" %}{% endif %}" alt="no image">
+                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "images/no_image.png" %}{% endif %}" alt="no image">
                 </a>
                 <a href="{{ product.get_absolute_url }}">{{ product.title }}</a><br>
                 ${{ product.price }}
