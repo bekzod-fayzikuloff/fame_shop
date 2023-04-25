@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
@@ -61,3 +63,24 @@ class LoginView(View):
         messages.error(request, "Unsuccessful login. Check provide credential")
         form = AuthenticationForm()
         return render(self.request, "users/login.html", context={"form": form})
+
+
+class CartView(View):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Get cart from cookie and render cart page"""
+        cart = request.COOKIES.get("cart")
+        cart_content = []
+        if cart and (cart_obj := json.loads(cart)):
+            for item in cart_obj:
+                product = Product.objects.get(pk=item.get("productId"))
+                item_quantity = item.get("quantity")
+                # Add auxiliary fields
+                cart_content.append(
+                    {"product": product, "quantity": item_quantity, "total": product.price * item_quantity}
+                )
+
+            total_cost = sum(map(lambda x: x.get("total"), cart_content))
+        else:
+            cart_content = []
+            total_cost = 0
+        return render(self.request, "shops/cart.html", context={"cart": cart_content, "total_cost": total_cost})

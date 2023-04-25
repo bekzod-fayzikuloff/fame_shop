@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+    <h1>Cart</h1>
+    <p>Total Cost: <span id="totalCost">{{ total_cost|floatformat:2 }}</span></p>
+    <div id="main" class="product-list">
+        {% for item in cart %}
+            <div class="item">
+                <a href="{{ item.product.get_absolute_url }}">
+                    <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static "images/no_image.png" %}{% endif %}" alt="no image">
+                </a>
+                <a href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a><br>
+                <p>Price: {{ item.product.price }}</p>
+                <p onclick="itemDesc({{ item.product.pk }}, {{ item.product.price }})">-</p>
+                Quantity: <span id="cartItemQuantity_{{ item.product.pk }}">{{ item.quantity }}</span>
+                <p onclick="itemIncr({{ item.product.pk }}, {{ item.product.price }})">+</p>
+                <p>Item total: <span id="cartItemTotal_{{ item.product.pk }}">{{ item.total }}</span></p>
+            </div>
+        {% endfor %}
+    </div>
+<script src="{% static 'js/cart.js' %}"></script>
+{% endblock %}

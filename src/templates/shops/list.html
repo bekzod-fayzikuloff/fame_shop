@@ -9,7 +9,7 @@
         <h3>Categories</h3>
         <ul>
             <li class="selected cart__item">
-                <a href="#">Card</a>
+                <a href="{% url "cart" %}">Card</a>
             </li>
             <li {% if not category %}class="selected"{% endif %}>
                 <a href="{% url "product_list" %}">All</a>

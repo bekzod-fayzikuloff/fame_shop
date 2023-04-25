@@ -39,17 +39,19 @@ function setupListeners() {
             let cart = JSON.parse(localStorage.getItem("cart"))
             if (!cart.filter(item => item.productId === productId).length) {
                 cart = [{productId, quantity: +quantity}, ...cart]
+                alert("Товар был добавлен в корзину")
             } else {
                 let index = cart.findIndex(item => item.productId === productId)
                 if (index !== -1) {
                     cart[index].quantity += +quantity
+                    alert("Количество товара в корзине было успешно изменено!")
                 }
             }
             localStorage.removeItem("cart")
             localStorage.setItem("cart", JSON.stringify(cart))
         } else {
             localStorage.setItem("cart", JSON.stringify([{productId, quantity: +quantity}]))
+            alert("Товар был добавлен в корзину")
         }
-        alert("Товар был добавлен в корзину")
     })
 }
