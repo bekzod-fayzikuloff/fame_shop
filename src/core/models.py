@@ -17,7 +17,7 @@ class Category(models.Model):
 
     def get_absolute_url(self) -> str | None:
         """getting url of category by slug"""
-        return reverse("shop:product_list_by_category", kwargs={"slug": self.slug})
+        return reverse("product_list_by_category", kwargs={"category_slug": self.slug})
 
 
 class Product(models.Model):
@@ -39,7 +39,7 @@ class Product(models.Model):
 
     def get_absolute_url(self) -> str | None:
         """getting url of product by id"""
-        return reverse("shop:product_detail", kwargs={"pk": self.pk})
+        return reverse("product_detail", kwargs={"pk": self.pk})
 
 
 class Order(models.Model):
@@ -66,7 +66,7 @@ class Order(models.Model):
 
     def get_absolute_url(self) -> str | None:
         """Get url of order by order id"""
-        return reverse("shop:order_detail", kwargs={"pk": self.pk})
+        return reverse("order_detail", kwargs={"pk": self.pk})
 
 
 class OrderItem(models.Model):
