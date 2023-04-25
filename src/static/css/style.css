@@ -94,7 +94,7 @@ form p label {
 }
 
 form p input {
-    width:300px;
+    width:100%;
     font-size:13px;
     margin-bottom:10px;
     padding:10px 12px;
