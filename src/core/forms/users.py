@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
+from ..models import PersonalData
+
 
 class CreateUserForm(UserCreationForm):
     """Create New User Form"""
@@ -23,3 +25,9 @@ class CreateUserForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class UserPersonalDataForm(forms.ModelForm):
+    class Meta:
+        model = PersonalData
+        exclude = ("user",)

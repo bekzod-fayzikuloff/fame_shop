@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Checout History{% endblock %}
+
+{% block content %}
+    <a href="{% url "product_list" %}">Shop</a>
+    <div id="main" class="product-list">
+        {% for order in orders %}
+            <div class="item">
+                <p>{{ order.first_name }}'s Order</p>
+                <p>Location: {{ order.city }} {{ order.address }}</p>
+                <p>Total cost: {{ order.get_total_cost }}</p>
+                <p>Order created: {{ order.created_at }}</p>
+                <p>Items: {% for item in order.get_items_flat %}
+                    <span><a href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a> - {{ item.quantity }}</span>
+                {% endfor %}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

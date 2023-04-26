@@ -5,7 +5,17 @@
 
 {% block content %}
     <div id="sidebar">
-        {% if user.is_authenticated %} <h3>{{ user.username }}</h3>{% endif %}
+        {% if user.is_authenticated %}
+            <h2>{{ user.username }}</h2>
+            <ul>
+                <li class="selected cart__item">
+                    <a href="{% url "profile" %}">Profile</a>
+                </li>
+                <li class="selected cart__item">
+                    <a href="{% url "checkout_history" %}">Checkout History</a>
+                </li>
+            </ul>
+        {% endif %}
         <h3>Categories</h3>
         <ul>
             <li class="selected cart__item">
@@ -19,6 +29,22 @@
                     <a href="{{ c.get_absolute_url }}">{{ c.title }}</a>
                 </li>
             {% endfor %}
+            {% if not user.is_authenticated %}
+                <ul>
+                    <li class="selected cart__item">
+                        <a href="{% url "register" %}">Register</a>
+                    </li>
+                    <li class="selected cart__item">
+                        <a href="{% url "login" %}">Login</a>
+                    </li>
+                </ul>
+            {% else  %}
+                <ul>
+                    <li class="selected cart__item">
+                        <a href="{% url "logout" %}">Logout</a>
+                    </li>
+                </ul>
+            {% endif %}
         </ul>
     </div>
     <div id="main" class="product-list">

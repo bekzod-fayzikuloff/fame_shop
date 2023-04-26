@@ -1,16 +1,18 @@
 import json
 
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
 from django.views import View
 
 from .forms.orders import CreateOrderForm
-from .forms.users import CreateUserForm
-from .models import Category, OrderItem, Product
-from .services import is_authenticated
+from .forms.users import CreateUserForm, UserPersonalDataForm
+from .models import Category, Order, OrderItem, PersonalData, Product
+from .services import get_personal_data_initial, is_authenticated
 
 
 def product_list(request: HttpRequest, category_slug=None) -> HttpResponse:
@@ -28,6 +30,45 @@ def product_detail(request: HttpRequest, pk) -> HttpResponse:
     """Product detail handler"""
     product = get_object_or_404(Product, pk=pk)
     return render(request, "shops/detail.html", context={"product": product})
+
+
+@login_required
+def checkout_history(request: HttpRequest) -> HttpResponse:
+    """View orders history for login user"""
+    orders = Order.objects.filter(email=request.user.email)
+    return render(request, "shops/checkout_history.html", context={"orders": orders})
+
+
+def logout_view(request: HttpRequest) -> HttpResponse:
+    """Logout handling"""
+    logout(request)
+    return redirect("product_list")
+
+
+class ProfileView(View):
+    @method_decorator(login_required)
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Profile personal data page"""
+        initial = get_personal_data_initial(self.request.user)
+        form = UserPersonalDataForm(initial=initial)
+        return render(self.request, "users/profile.html", context={"form": form})
+
+    @method_decorator(login_required)
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handling profile personal data changing"""
+        form = UserPersonalDataForm(self.request.POST)
+        if form.is_valid():
+            if PersonalData.objects.filter(user=self.request.user).exists():
+                for field in form.cleaned_data:
+                    setattr(self.request.user.personaldata, field, form.cleaned_data[field])
+                self.request.user.personaldata.save()
+            else:
+                form.cleaned_data["user"] = self.request.user
+                PersonalData.objects.create(**form.cleaned_data)
+
+            return redirect("product_list")
+        messages.error(request, "Unsuccessful registration. Check provide credential")
+        return render(self.request, "users/register.html", context={"form": form})
 
 
 class RegisterView(View):
@@ -84,7 +125,9 @@ class CartView(View):
         else:
             cart_content = []
             total_cost = 0
-        form = CreateOrderForm()
+
+        initial = get_personal_data_initial(self.request.user)
+        form = CreateOrderForm(initial=initial)
         return render(
             self.request, "shops/cart.html", context={"cart": cart_content, "total_cost": total_cost, "form": form}
         )

@@ -4,7 +4,13 @@ Customize admin panel for models
 
 from django.contrib import admin
 
-from .models import Category, Order, OrderItem, Product
+from .models import Category, Order, OrderItem, PersonalData, Product
+
+
+@admin.register(PersonalData)
+class PersonalDataAdmin(admin.ModelAdmin):
+    search_fields = ("first_name", "city")
+    list_display = ("first_name",)
 
 
 @admin.register(Category)

@@ -1,7 +1,21 @@
 import decimal
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+
+
+class PersonalData(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=40)
+    last_name = models.CharField(max_length=40)
+    address = models.CharField(max_length=250)
+    postal_code = models.CharField(max_length=20)
+    city = models.CharField(max_length=120)
+    phone_number = models.CharField(max_length=15)
+
+    def __str__(self) -> str:
+        return f"{self.first_name}"
 
 
 class Category(models.Model):
@@ -63,6 +77,10 @@ class Order(models.Model):
     def get_total_cost(self) -> decimal.Decimal:
         """Get total cost of order"""
         return sum(item.get_cost() for item in self.items.all())
+
+    def get_items_flat(self):
+        """Get order items summary"""
+        return (item for item in self.items.select_related("product").all())
 
     def get_absolute_url(self) -> str | None:
         """Get url of order by order id"""
