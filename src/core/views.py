@@ -7,8 +7,9 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
+from .forms.orders import CreateOrderForm
 from .forms.users import CreateUserForm
-from .models import Category, Product
+from .models import Category, OrderItem, Product
 from .services import is_authenticated
 
 
@@ -83,4 +84,29 @@ class CartView(View):
         else:
             cart_content = []
             total_cost = 0
-        return render(self.request, "shops/cart.html", context={"cart": cart_content, "total_cost": total_cost})
+        form = CreateOrderForm()
+        return render(
+            self.request, "shops/cart.html", context={"cart": cart_content, "total_cost": total_cost, "form": form}
+        )
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Cart items checkout"""
+        form = CreateOrderForm(self.request.POST)
+        cart = request.COOKIES.get("cart")
+
+        if form.is_valid():
+            order = form.save()
+            if cart and (cart_obj := json.loads(cart)):
+                execute_entry = []
+                for item in cart_obj:
+                    product = Product.objects.get(pk=item.get("productId"))
+                    execute_entry.append(
+                        OrderItem(order=order, product=product, price=product.price, quantity=item.get("quantity"))
+                    )
+                OrderItem.objects.bulk_create(execute_entry)  # Create db records by one query
+
+                messages.success(request, "Checkout was completed successfully")
+                return render(self.request, "shops/cart.html", context={"form": form})
+
+        messages.error(request, "Checkout was failed. You need peek any item")
+        return render(self.request, "shops/cart.html", context={"form": form})

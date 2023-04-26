@@ -8,6 +8,11 @@ window.onload = function() {
     }
 }
 
+document.querySelector("#checkoutBtn").addEventListener("click", () => {
+    // Clear current cart after checkout
+    localStorage.removeItem("cart")
+})
+
 function itemDesc(productId, price) {
     /* Update selected items count and save changes in localStorage <also update cookies for backend> */
     let quantity = document.querySelector(`#cartItemQuantity_${productId}`)
@@ -28,7 +33,7 @@ function itemDesc(productId, price) {
     }
     localStorage.removeItem("cart")
     localStorage.setItem("cart", JSON.stringify(cart))
-
+    document.cookie = `cart=${JSON.stringify(cart)}`
 }
 
 function itemIncr(productId, price) {
@@ -49,4 +54,5 @@ function itemIncr(productId, price) {
     }
     localStorage.removeItem("cart")
     localStorage.setItem("cart", JSON.stringify(cart))
+    document.cookie = `cart=${JSON.stringify(cart)}`
 }

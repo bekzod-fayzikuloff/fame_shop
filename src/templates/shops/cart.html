@@ -5,6 +5,21 @@
 {% block content %}
     <h1>Cart</h1>
     <p>Total Cost: <span id="totalCost">{{ total_cost|floatformat:2 }}</span></p>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">✖</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button id="checkoutBtn" class="btn btn-primary" type="submit">Checkout</button>
+    </form>
     <div id="main" class="product-list">
         {% for item in cart %}
             <div class="item">
@@ -20,5 +35,6 @@
             </div>
         {% endfor %}
     </div>
-<script src="{% static 'js/cart.js' %}"></script>
+
+    <script src="{% static 'js/cart.js' %}"></script>
 {% endblock %}
